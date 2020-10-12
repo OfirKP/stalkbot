@@ -1419,3 +1419,25 @@ window.WAPI.demoteParticipantAdminGroup = function (idGroup, idParticipant, done
         done(true); return true;
     })
 }
+
+/**
+ * Discover if a user (who has an existing chat with us) is online
+ * @param {*} idUser '000000000000@c.us'
+ */
+window.WAPI.isUserOnline = async function (idUser)
+{
+    let user = idUser;
+    let userPresence;
+
+    try {
+        userPresence = await Store.Presence.find(user);
+    }
+    catch 
+    {
+        user = new window.Store.UserConstructor(idUser, {intentionallyUsePrivateConstructor: true});
+        Store.Chat.find(idUser);
+        userPresence = await Store.Presence.find(user);
+    }
+
+    return userPresence.isOnline; 
+}
